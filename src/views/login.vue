@@ -42,11 +42,18 @@
           type="password"
           placeholder="密碼"
         />
-         <div v-if="login_validate" class="col-12 d-flex align-items-center mb-2" :class="{ 'd-none' : !login_validate }">
-            <i class="bi bi-exclamation-circle-fill text-danger"></i>
-            <small class="text-danger ms-2">您的帳號尚未授權</small>
-          </div>
-        <button class="w-100 btn btn-primary btn-lg text-white mb-3" @click="loginButton">
+        <div
+          v-if="login_validate"
+          class="col-12 d-flex align-items-center mb-2"
+          :class="{ 'd-none': !login_validate }"
+        >
+          <i class="bi bi-exclamation-circle-fill text-danger"></i>
+          <small class="text-danger ms-2">您的帳號尚未授權</small>
+        </div>
+        <button
+          class="w-100 btn btn-primary btn-lg text-white mb-3"
+          @click="loginButton"
+        >
           登入
         </button>
         <router-link class="text-decoration-none" to="/"
@@ -85,7 +92,7 @@ const form = {
   password: pwd.value,
 };
 const b = () => {
-  console.log(process.env.VUE_APP_BASE_URL_proxyGovd == '/govd')
+  console.log(process.env.VUE_APP_BASE_URL_proxyGovd == "/govd");
   router.push({
     path: "/dashboard",
   });
@@ -95,13 +102,12 @@ const loginButton = () => {
     .loadAuth()
     .login(form)
     .then((res) => {
-      console.log(res.data.status)
-      if(res.data.status === 0){
-         router.push({
-         path: "/dashboard",
-       });
-      }
-      else{
+      console.log(res.data.status);
+      if (res.data.status === 0) {
+        router.push({
+          path: "/dashboard",
+        });
+      } else {
         login_validate.value = true;
       }
       sessionStorage.setItem("uu_id", res.data.uu_id);
