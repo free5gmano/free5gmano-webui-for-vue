@@ -42,7 +42,18 @@
           type="password"
           placeholder="密碼"
         />
-        <button class="w-100 btn btn-primary btn-lg text-white mb-3" @click="a">
+        <div
+          v-if="login_validate"
+          class="col-12 d-flex align-items-center mb-2"
+          :class="{ 'd-none': !login_validate }"
+        >
+          <i class="bi bi-exclamation-circle-fill text-danger"></i>
+          <small class="text-danger ms-2">您的帳號尚未授權</small>
+        </div>
+        <button
+          class="w-100 btn btn-primary btn-lg text-white mb-3"
+          @click="loginButton"
+        >
           登入
         </button>
         <router-link class="text-decoration-none" to="/"
@@ -63,7 +74,6 @@
   <button @click="b">123</button>
 </template>
 <script setup>
-import { useStore } from "vuex";
 import { ref, defineAsyncComponent } from "vue";
 import { useRouter } from "vue-router";
 // import { login } from '../apis/auth/authApi';
@@ -73,31 +83,33 @@ const ModalRegister = defineAsyncComponent(() =>
     /* webpackChunkName: "ModalRegister" */ "@/components/global/modal-register.vue"
   )
 );
-const store = useStore();
 const router = useRouter();
 const name = ref("admin");
 const pwd = ref("admin");
+const login_validate = ref(false);
 const form = {
   name: name.value,
   password: pwd.value,
 };
 const b = () => {
-  console.log(process.env.VUE_APP_BASE_URL_proxyGovd == '/govd')
-  store.commit("changeLoginStatus");
+  console.log(process.env.VUE_APP_BASE_URL_proxyGovd == "/govd");
   router.push({
     path: "/dashboard",
   });
 };
-const a = () => {
+const loginButton = () => {
   api
     .loadAuth()
     .login(form)
     .then((res) => {
-      store.commit("changeLoginStatus");
-      router.push({
-        path: "/dashboard",
-      });
-      console.log(res);
+      console.log(res.data.status);
+      if (res.data.status === 0) {
+        router.push({
+          path: "/dashboard",
+        });
+      } else {
+        login_validate.value = true;
+      }
       sessionStorage.setItem("uu_id", res.data.uu_id);
     })
     .catch((err) => {
