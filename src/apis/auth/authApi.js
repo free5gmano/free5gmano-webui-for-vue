@@ -35,7 +35,7 @@ export class authApi extends Connect {
      * @returns
      */
     login(form){
-        return super.post('basic/login/', form)
+        return super.post("SecurityManagement/login/", form);
     }
     
     /**

@@ -3,7 +3,6 @@ import { createStore } from 'vuex'
 export default createStore({
   state: {
     windowWidth: window.innerWidth,
-    loginStatus: false,
     currentRoute: '',
     menuData: [
       {
