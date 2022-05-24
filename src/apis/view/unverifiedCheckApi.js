@@ -3,7 +3,7 @@ import Connect from "@/libs/http/apiConfig";
 export class unverifiedCheck extends Connect {
 
     unverifiedList(){
-        return super.get('basic/unverified_list/')
+        return super.get('SecurityManagement/unverified_list/')
     }
 
     /**
@@ -12,7 +12,7 @@ export class unverifiedCheck extends Connect {
      */
 
     adminCheck(form){
-        return super.post('basic/admin_check/', form)
+        return super.post('SecurityManagement/admin_check/', form)
     }
 
 }

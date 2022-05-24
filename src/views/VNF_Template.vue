@@ -1,20 +1,31 @@
 <template>
-  <Table :column="th_list" :entrie="td_list" :columnSort="columnSort" :status="status" @update="updateTableData">
+  <Table
+    :column="th_list"
+    :entrie="td_list"
+    :columnSort="columnSort"
+    :status="status"
+    @update="updateTableData"
+  >
     <template v-slot:header>
       <h3>
-        {{ t('generic.template', [t('template_header', 0)]) }}
+        {{ t("generic.template", [t("template_header", 0)]) }}
       </h3>
     </template>
     <template v-slot:button>
-      {{ t('generic.template', [`${ t('Create') }VNF`]) }}
+      {{ t("generic.template", [`${t("Create")}VNF`]) }}
     </template>
     <template v-slot:table-name>
-      {{ t('generic.template', ['VNF', t('list')]) }}
+      {{ t("generic.template", ["VNF", t("list")]) }}
     </template>
     <template v-slot:table-td>
       <tr v-for="item in filterEntries" :key="item.templateId">
-        <td  class="tablecell-custom">
-          <i class="bi bi-list cursor-pointer me-1" data-bs-toggle="modal" data-bs-target="#show_plugin_Modal" @click="show_template_button(item.templateId, item.content)"></i>
+        <td class="tablecell-custom">
+          <i
+            class="bi bi-list cursor-pointer me-1"
+            data-bs-toggle="modal"
+            data-bs-target="#show_plugin_Modal"
+            @click="show_template_button(item.templateId, item.content)"
+          ></i>
           {{ item.templateId }}
         </td>
         <td class="tablecell-custom">{{ item.name }}</td>
@@ -23,22 +34,48 @@
         <td class="tablecell-custom">{{ item.nfvoType }}</td>
         <td class="tablecell-custom">{{ item.operationStatus }}</td>
         <td class="w-0">
-          <div class="d-flex justify-content-center form-check form-switch mb-0">
-            <input class="form-check-input cursor-pointer" type="checkbox" role="switch" :checked="item.share" @click="sh(item.name, item.share)">
+          <div
+            class="d-flex justify-content-center form-check form-switch mb-0"
+          >
+            <input
+              class="form-check-input cursor-pointer"
+              type="checkbox"
+              role="switch"
+             :disabled="item.operationStatus == 'CREATED'"
+              :checked="item.share"
+              @click="isPublic(item.name, item.share)"
+            />
           </div>
         </td>
         <td class="w-0">
-          <div class="d-flex justify-content-center align-items-center text-white bg-warning rounded-circle cursor-pointer mx-auto" style="width:30px; height:30px" data-bs-toggle="modal" data-bs-target="#update_plugin_Modal" @click="update_template_button(item.templateId, item.nfvoType)">
+          <div
+            class="d-flex justify-content-center align-items-center text-white bg-warning rounded-circle cursor-pointer mx-auto"
+            style="width: 30px; height: 30px"
+            data-bs-toggle="modal"
+            data-bs-target="#update_plugin_Modal"
+            @click="update_template_button(item.templateId, item.nfvoType)"
+          >
             <i class="bi bi-wrench"></i>
           </div>
         </td>
         <td class="w-0">
-          <a :href="item.templateFile" @click="download_template_button(item.templateFile)" class="d-flex justify-content-center align-items-center text-white bg-primary rounded-circle cursor-pointer mx-auto" style="width:30px; height:30px">
+          <a
+            :href="item.templateFile"
+            @click="download_template_button(item.templateFile)"
+            class="d-flex justify-content-center align-items-center text-white bg-primary rounded-circle cursor-pointer mx-auto"
+            style="width: 30px; height: 30px"
+          >
             <i class="bi bi-arrow-down"></i>
           </a>
         </td>
         <td class="w-0">
-          <div class="d-flex justify-content-center align-items-center text-white bg-danger rounded-circle cursor-pointer mx-auto" style="width:30px; height:30px"  data-bs-toggle="modal" data-bs-target="#delete_plugin_Modal" @click="get_templateId(item.templateId)">
+          <div
+            class="d-flex justify-content-center align-items-center text-white bg-danger rounded-circle cursor-pointer mx-auto"
+            style="width: 30px; height: 30px"
+            data-bs-toggle="modal"
+            data-bs-target="#delete_plugin_Modal"
+            @click="get_templateId(item.templateId)"
+          >
             <i class="bi bi-trash"></i>
           </div>
         </td>
@@ -46,114 +83,187 @@
     </template>
   </Table>
   <Modalshow ref="modalShow" @remove="removeShowData">
-    <template v-slot:header>
-      VNF {{ t('list') }}
-    </template>
+    <template v-slot:header> VNF {{ t("list") }} </template>
     <template v-slot:body>
       <form>
         <div class="mb-3">
           <label for="InputFile" class="form-label">
-            {{ `${t('generic.template', ['VNF', t('ID')])} :` }}
+            {{ `${t("generic.template", ["VNF", t("ID")])} :` }}
           </label>
-          <input type="text" class="form-control" id="InputFile" placeholder="請輸入 Plugin 名稱" v-model="templateId" readonly>
+          <input
+            type="text"
+            class="form-control"
+            id="InputFile"
+            placeholder="請輸入 Plugin 名稱"
+            v-model="templateId"
+            readonly
+          />
         </div>
         <div>
           <label for="VnfList" class="form-label">
-            VNF {{ t('ID') }}{{ t('list') }} :
+            VNF {{ t("ID") }}{{ t("list") }} :
           </label>
           <ul class="list-group list-group-flush">
-            <li class="list-group-item" v-for="item in templateVNFList[templateId]" :key="item">{{ item }}</li>
+            <li
+              class="list-group-item"
+              v-for="item in templateVNFList[templateId]"
+              :key="item"
+            >
+              {{ item }}
+            </li>
           </ul>
         </div>
       </form>
     </template>
   </Modalshow>
-  <Modalcreate ref="modalCreate" @remove="removeCreateData" @keypress.enter="create_template_modal">
+  <Modalcreate
+    ref="modalCreate"
+    @remove="removeCreateData"
+    @keypress.enter="create_template_modal"
+  >
     <template v-slot:header>
-      {{ t('generic.create', ['VNF']) }}
+      {{ t("generic.create", ["VNF"]) }}
     </template>
     <template v-slot:body>
       <form>
         <div class="mb-3">
           <label for="InputFile" class="form-label">
-            {{`${t('generic.name')} :`}}
+            {{ `${t("generic.name")} :` }}
           </label>
-          <input type="text" class="form-control" :class="{ 'is-invalid' : text_invalidated }" id="InputFile" :placeholder="t('generic.name')" v-model.trim="templateName" autocomplete="off">
+          <input
+            type="text"
+            class="form-control"
+            :class="{ 'is-invalid': text_invalidated }"
+            id="InputFile"
+            :placeholder="t('generic.name')"
+            v-model.trim="templateName"
+            autocomplete="off"
+          />
           <div class="invalid-feedback">
             <template v-if="repeatName">
-              {{ t('exists',[t('generic.thisName')]) }}
+              {{ t("exists", [t("generic.thisName")]) }}
             </template>
             <template v-else>
-            {{ t('notEmpty',[t('generic.name')]) }}
+              {{ t("notEmpty", [t("generic.name")]) }}
             </template>
           </div>
         </div>
         <div class="mb-3">
           <label for="InputFile2" class="form-label">
-            {{`${ t('generic.description',['VNF']) } :`}}
+            {{ `${t("generic.description", ["VNF"])} :` }}
           </label>
-          <input type="text" class="form-control" id="InputFile2" :placeholder="t('Description')" v-model.trim="templateDescription" autocomplete="off">
+          <input
+            type="text"
+            class="form-control"
+            id="InputFile2"
+            :placeholder="t('Description')"
+            v-model.trim="templateDescription"
+            autocomplete="off"
+          />
         </div>
         <div class="mb-2">
           <label for="InputFile3" class="form-label">
-            {{`${ t('generic.NFVOName') } :`}}
+            {{ `${t("generic.NFVOName")} :` }}
           </label>
-          <select v-model="currentNFVMANO" class="form-select form-select" :class="{ 'is-invalid' : select_invalidated }" id="InputFile3" aria-label=".form-select" @change="selectNFVMANO">
+          <select
+            v-model="currentNFVMANO"
+            class="form-select form-select"
+            :class="{ 'is-invalid': select_invalidated }"
+            id="InputFile3"
+            aria-label=".form-select"
+            @change="selectNFVMANO"
+          >
             <option selected disabled :value="t('base.select')">
-              {{t('base.select')}}
+              {{ t("base.select") }}
             </option>
-            <option v-for="item in sortNFVMANOList" :key="item.name" :value="item.name">{{ item.name }}</option>
+            <option
+              v-for="item in sortNFVMANOList"
+              :key="item.name"
+              :value="item.name"
+            >
+              {{ item.name }}
+            </option>
           </select>
           <div class="invalid-feedback">
-            {{ t('selectTemplate', ['NFVO', t('plugin')]) }}
+            {{ t("selectTemplate", ["NFVO", t("plugin")]) }}
           </div>
         </div>
       </form>
     </template>
     <template v-slot:footer>
-      <button type="button" class="btn btn-primary text-white" @click="create_template_modal">
-        {{ t('Create') }}
+      <button
+        type="button"
+        class="btn btn-primary text-white"
+        @click="create_template_modal"
+      >
+        {{ t("Create") }}
       </button>
     </template>
   </Modalcreate>
-  <Modalupdate ref="modalUpdate" @remove="removeUpdateData" @keypress.enter="update_template_modal">
+  <Modalupdate
+    ref="modalUpdate"
+    @remove="removeUpdateData"
+    @keypress.enter="update_template_modal"
+  >
     <template v-slot:header>
-      {{ t('generic.update', ['VNF']) }}
+      {{ t("generic.update", ["VNF"]) }}
     </template>
     <template v-slot:body>
       <form>
         <div class="mb-3">
           <label for="InputFile" class="form-label">
-             {{`${ t('generic.template', ['VNF', t('ID')]) } :`}}
+            {{ `${t("generic.template", ["VNF", t("ID")])} :` }}
           </label>
-          <input type="text" class="form-control" id="InputFile" v-model="templateId" readonly>
+          <input
+            type="text"
+            class="form-control"
+            id="InputFile"
+            v-model="templateId"
+            readonly
+          />
         </div>
         <div class="mb-2">
           <label for="UploadFile2" class="form-label">
-            {{`${ t('generic.template', ['VNF', t('File')]) } :`}}
+            {{ `${t("generic.template", ["VNF", t("File")])} :` }}
           </label>
-          <input type="file" class="form-control" :class="{ 'is-invalid' : file_invalidated }" id="UploadFile2" ref="uploadData_update" accept=".zip" @change="getFileData">
+          <input
+            type="file"
+            class="form-control"
+            :class="{ 'is-invalid': file_invalidated }"
+            id="UploadFile2"
+            ref="uploadData_update"
+            accept=".zip"
+            @change="getFileData"
+          />
           <div class="invalid-feedback">
-            {{t('notEmpty', [t('File')])}}
+            {{ t("notEmpty", [t("File")]) }}
           </div>
         </div>
       </form>
     </template>
     <template v-slot:footer>
-      <button type="button" class="btn btn-warning text-white" @click="update_template_modal">
-        {{`${ t('Update') }`}}
+      <button
+        type="button"
+        class="btn btn-warning text-white"
+        @click="update_template_modal"
+      >
+        {{ `${t("Update")}` }}
       </button>
     </template>
   </Modalupdate>
-  <Modaldelete ref="modalDelete" @remove="removeDeleteData" @keypress.enter="delete_template_modal" @delete="delete_template_modal">
+  <Modaldelete
+    ref="modalDelete"
+    @remove="removeDeleteData"
+    @keypress.enter="delete_template_modal"
+    @delete="delete_template_modal"
+  >
     <template v-slot:header>
-      {{ t('generic.delete', ['VNF']) }} 
+      {{ t("generic.delete", ["VNF"]) }}
     </template>
   </Modaldelete>
   <Alert ref="alertRef" v-show="alertExist"></Alert>
 </template>
 <script setup>
-import axios from 'axios';
 import { $array } from 'alga-js';
 import { api } from '../apis/api';
 import { useI18n } from 'vue-i18n';
@@ -176,7 +286,7 @@ const modalCreate = ref(null);
 const modalUpdate = ref(null);
 const modalDelete = ref(null);
 const uploadData_update = ref(null);
-const status = ref(false); 
+const status = ref(false);
 const th_list = [
   { name: "templateId", text: t("ID") },
   { name: "name", text: t('generic.name') },
@@ -199,10 +309,10 @@ const templateVNFList = ref({});
 const templateDescription = ref('');
 const currentNFVMANO = ref(t('base.select'));
 const columnSort = ['templateId', 'name', 'description', 'templateType', 'nfvoType', 'operationStatus'];
-const repeatName = computed(() => { 
-  return td_list.value.map(e => e.name).includes(templateName.value); 
-});  
-const sortNFVMANOList = computed(() => { 
+const repeatName = computed(() => {
+  return td_list.value.map(e => e.name).includes(templateName.value);
+});
+const sortNFVMANOList = computed(() => {
   return $array.sortBy(nfv_mano_list.value, 'name', 'asc');
 });
 const selectNFVMANO = () => {
@@ -218,13 +328,13 @@ const getTableData = async () => {  // 顯示 Table 資料
   // const VNFfilter = res.data.filter(x => x.templateType == 'VNF');
   // td_list.value = VNFfilter.filter(x => x.user_id == '7');
   td_list.value = res.data.filter(x => x.templateType == 'VNF');
-  
+
 };
-const create_Validate = () => { 
+const create_Validate = () => {
   const set = t('base.select');
   const textValidate = text_Validate([repeatName.value, templateName.value]);
   const selectValidate = select_Validate(currentNFVMANO.value, set);
-  const validate = textValidate && selectValidate; 
+  const validate = textValidate && selectValidate;
   return validate;
 };
 const create_template_modal = () => { // 點擊 Create Modal 內創建按鈕
@@ -242,20 +352,20 @@ const create_template_modal = () => { // 點擊 Create Modal 內創建按鈕
     closeModal(modalCreate.value);
   }
 };
-const get_templateId = id => { 
-  templateId.value = id; 
+const get_templateId = id => {
+  templateId.value = id;
 };
-const getFileData = e => { 
+const getFileData = e => {
   fileData.value = e.target.files;
   modalUpdate.value.focusModalEvent();
 };
-const update_template_validate = () => { 
+const update_template_validate = () => {
   const fileValidate = file_Validate(fileData.value[0]);
   return fileValidate;
 };
 const update_template_button = (id, type) => { // 點擊 Update Modal 按鈕
   get_templateId(id);
-  currentNFVMANO.value = type; 
+  currentNFVMANO.value = type;
 };
 const update_template_modal = async () => { // 點擊 Update Modal 內更新按鈕
   const updateValidate = update_template_validate();
@@ -264,7 +374,7 @@ const update_template_modal = async () => { // 點擊 Update Modal 內更新按�
       Template: t('generic.template', [t('template_header', 0)]),
       configSuccess: t('updated'),
       configUnsuccess: t('update'),
-    };    
+    };
     const formName = ['name', 'templateType', 'templateFile'];
     const formValue = [currentNFVMANO.value, 'VNF', fileData.value[0]];
     const formData = form(formName, formValue);
@@ -281,7 +391,7 @@ const delete_template_modal = () => { // 點擊 Delete Modal 內刪除按鈕
   generic_delete(templateId.value, getTableData, alertData);
   closeModal(modalDelete.value);
 };
-const updateTableData = val => {  // 每次執行 Table 操作，更新資料 
+const updateTableData = val => {  // 每次執行 Table 操作，更新資料
   filterEntries.value = val;
 };
 const download_template_button = file => { // 點擊 Download Modal 按鈕
@@ -329,26 +439,24 @@ const removeUpdateData = () => { // 關閉 Update Modal
 const removeDeleteData = () =>  { // 關閉 Delete Modal
   templateId.value = '';
 };
-const sh = (name, share) => {
-  console.log(share)
-  console.log(name)
-  const s = !share
-  console.log('s',s)
-  axios.post('http://10.20.1.40/basic/switch_share_gen/',{
+const isPublic = (name, share) => {
+  const isShare = !share
+  api.genericTemplate().public({
+    type:'NRM',
     name:name,
-    share:s
-  }).then(res=>{
+    share:isShare
+  })
+.then(res=>{
     console.log(res)
     getTableData()
   }).catch((err)=>{
     console.log(err)
   })
-
 }
 watch(templateName, () => { text_invalidated.value = false; });
 watch(fileData, () => { file_invalidated.value = false; });
 watch(currentNFVMANO, () => { select_invalidated.value = false; });
-  
+
 onBeforeMount(async () => {
  try {
    await getTableData();

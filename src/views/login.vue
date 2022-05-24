@@ -33,7 +33,7 @@
         <input
           v-model="name"
           class="form-control form-control-lg mb-3"
-          type="email"
+          type="text"
           placeholder="帳號"
         />
         <input
@@ -48,7 +48,8 @@
           :class="{ 'd-none': !login_validate }"
         >
           <i class="bi bi-exclamation-circle-fill text-danger"></i>
-          <small class="text-danger ms-2">您的帳號尚未授權</small>
+          <small class="text-danger ms-2">{{msg}}</small>
+          <!-- <small class="text-danger ms-2">您的帳號尚未授權</small> -->
         </div>
         <button
           class="w-100 btn btn-primary btn-lg text-white mb-3"
@@ -76,7 +77,6 @@
 <script setup>
 import { ref, defineAsyncComponent } from "vue";
 import { useRouter } from "vue-router";
-// import { login } from '../apis/auth/authApi';
 import { api } from "../apis/api";
 const ModalRegister = defineAsyncComponent(() =>
   import(
@@ -84,13 +84,10 @@ const ModalRegister = defineAsyncComponent(() =>
   )
 );
 const router = useRouter();
-const name = ref("admin");
-const pwd = ref("admin");
+const name = ref("");
+const pwd = ref("");
 const login_validate = ref(false);
-const form = {
-  name: name.value,
-  password: pwd.value,
-};
+const msg = ref()
 const b = () => {
   console.log(process.env.VUE_APP_BASE_URL_proxyGovd == "/govd");
   router.push({
@@ -98,19 +95,23 @@ const b = () => {
   });
 };
 const loginButton = () => {
+  const form = {
+    name: name.value,
+    password: pwd.value,
+  };
   api
     .loadAuth()
     .login(form)
     .then((res) => {
-      console.log(res.data.status);
+      console.log(res.data);
       if (res.data.status === 0) {
         router.push({
           path: "/dashboard",
         });
       } else {
         login_validate.value = true;
+        msg.value = res.data.message
       }
-      sessionStorage.setItem("uu_id", res.data.uu_id);
     })
     .catch((err) => {
       console.log(err);

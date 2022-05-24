@@ -19,7 +19,15 @@
     </template>
     <template v-slot:table-td>
       <tr v-for="item in filterEntries" :key="item.templateId">
-        <td class="tablecell-custom">{{ item.templateId }}</td>
+        <td class="tablecell-custom">
+          <i
+            class="bi bi-list cursor-pointer me-1"
+            data-bs-toggle="modal"
+            data-bs-target="#show_plugin_Modal"
+            @click="get_templateId(item.templateId)"
+          ></i>
+          {{ item.templateId }}
+        </td>
         <td class="tablecell-custom">{{ item.name }}</td>
         <td class="tablecell-custom">{{ item.description }}</td>
         <td class="tablecell-custom">{{ item.templateType }}</td>
@@ -33,7 +41,9 @@
               class="form-check-input cursor-pointer"
               type="checkbox"
               role="switch"
-              checked
+              :disabled="item.operationStatus == 'CREATED'"
+              :checked="item.share"
+              @click="isPublic(item.name, item.share)"
             />
           </div>
         </td>
@@ -217,6 +227,26 @@
       {{ t("generic.delete", ["NRM"]) }}
     </template>
   </Modaldelete>
+  <Modalshow ref="modalShow" @remove="removeShowData">
+    <template v-slot:header> NRM {{ t("list") }} </template>
+    <template v-slot:body>
+      <form>
+        <div class="mb-3">
+          <label for="InputFile" class="form-label">
+            {{ `${t("generic.template", ["NRM", t("ID")])} :` }}
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            id="InputFile"
+            placeholder="請輸入 Plugin 名稱"
+            v-model="templateId"
+            readonly
+          />
+        </div>
+      </form>
+    </template>
+  </Modalshow>
   <Alert ref="alertRef" v-show="alertExist"></Alert>
 </template>
 <script setup>
@@ -255,6 +285,7 @@ const { alertRef, alertExist } = toRefs(alertConfig);
 const Alert = defineAsyncComponent(() =>
   import(/* webpackChunkName: "Alert" */ "../components/global/alert.vue")
 );
+const Modalshow = defineAsyncComponent(() => import(/* webpackChunkName: "Modalshow" */ '../components/global/modal-show.vue'));
 const Modalcreate = defineAsyncComponent(() =>
   import(
     /* webpackChunkName: "Modalcreate" */ "../components/global/modal-create.vue"
@@ -321,6 +352,7 @@ const getTableData = async () => {
   td_list.value = res.data.filter((x) => x.templateType == "NRM");
   // const NRMfilter = res.data.filter(x => x.templateType == 'NRM');
   // td_list.value = NRMfilter.filter(x => x.user_id == '7');
+  console.log(td_list.value)
 };
 const selectNFVMANO = () => {
   modalCreate.value.focusModalEvent();
@@ -428,7 +460,23 @@ const removeDeleteData = () => {
   // 關閉 Delete Modal
   templateId.value = "";
 };
-
+const removeShowData = () => { // 關閉 Show Modal
+  templateId.value = '';
+};
+const isPublic = (name, share) => {
+  const isShare = !share
+  api.genericTemplate().public({
+    type:'NRM',
+    name:name,
+    share:isShare
+  })
+.then(res=>{
+    console.log(res)
+    getTableData()
+  }).catch((err)=>{
+    console.log(err)
+  })
+}
 watch(templateName, () => {
   text_invalidated.value = false;
 });

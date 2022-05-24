@@ -4,6 +4,8 @@ export default createStore({
   state: {
     windowWidth: window.innerWidth,
     currentRoute: '',
+    role: '',
+    uuid:'',
     menuData: [
       {
         name: "Dashboard",
@@ -79,6 +81,15 @@ export default createStore({
     changeLocaleLang(state,payload) {
       state.localeLang = payload;
     },
+    getRole(state,payload) {
+      state.role = payload;
+    },
+    getuuid(state,payload) {
+      state.uuid = payload;
+    },
+    adminMenu(state,payload) {
+      state.menuData = payload;
+    }
   },
   actions: {
   },

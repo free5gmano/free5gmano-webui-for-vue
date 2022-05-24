@@ -12,23 +12,84 @@
 <script setup>
 import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
+import { api } from '@/apis/api';
 // import { useI18n } from 'vue-i18n';
 import { useCookies } from "vue3-cookies";
 import Header from "./components/global/header.vue";
 import Sidebar from "./components/global/sidebar.vue";
 // import Cookies from 'js-cookie'
-import { ref, watch, provide, nextTick, onMounted } from 'vue';
-console.log(process.env)
-console.log(document.cookie);
+import { ref, watch, provide, nextTick, onMounted, onBeforeMount } from 'vue';
 const { cookies } = useCookies();
-// var user = { id:1, name:'Journal',session:'25j_7Sl6xDq2Kc3ym0fmrSSk2xV2XkUkX' };
-// cookies.set('user',user);
-const a = cookies.isKey('user') 
-const b = cookies.keys()  
-console.log(a)
-console.log(b)
+const uuid = cookies.get('uu_id')
+const adminMenuData =  [
+      {
+        name: "Dashboard",
+        icon: "bi bi-clipboard",
+        url: "dashboard",
+        childNodes: [],
+      },
+      {
+        name: "NFV MANO Plugin",
+        icon: "bi bi-award",
+        url: "nfv_mano_plugin",
+        childNodes: [],
+      },
+      {
+        name: "Generic Template",
+        icon: "bi bi-bell",
+        url: "generic_template",
+        childNodes: [
+          {
+            name: "VNF Template",
+            url: "vnf_template",
+          },
+          {
+            name: "NSD Template",
+            url: "nsd_template",
+          },
+          {
+            name: "NRM Template",
+            url: "nrm_template",
+          },
+        ],
+      },
+      {
+        name: "NSS Template",
+        icon: "bi bi-bootstrap",
+        url: "nss_template",
+        childNodes: [],
+      },
+      {
+        name: "NSSI View",
+        icon: "bi bi-brightness-high",
+        url: "nssi_view",
+        childNodes: [
+          {
+            name: "Graph View",
+            url: "nssi_topology",
+          },
+          {
+            name: "List View",
+            url: "NSS_Instance",
+          },
+        ],
+      },
+      {
+        name: "Auth Account",
+        icon: "bi bi-bootstrap",
+        url: "authAccount",
+        childNodes: [],
+      },
+      {
+        name: "Setting",
+        icon: "bi bi-bootstrap",
+        url: "setting",
+        childNodes: [],
+      }
+    ];
 const store = useStore();
 const route = useRoute();
+store.commit("getuuid", uuid);
 const isRouterAlive = ref(true);
 // const { locale } = useI18n()
 const reload = () => {
@@ -44,6 +105,21 @@ watch(route, () => {
   else
     store.commit('changeRoute', route.path.slice(1));
 });
+onBeforeMount(()=>{
+  api
+  .loadAuth()
+  .getRole()
+  .then((res) => {
+    store.commit("getRole", res.data.role);
+    if(res.data.role == 'admin'){
+    store.commit("adminMenu",adminMenuData);
+  }
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+  
+})
 onMounted(() => {
   window.addEventListener("resize", () => {
     store.commit("changeWindowWidth");

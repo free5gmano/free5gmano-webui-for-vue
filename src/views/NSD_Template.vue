@@ -44,7 +44,9 @@
               class="form-check-input cursor-pointer"
               type="checkbox"
               role="switch"
-              checked
+              :disabled="item.operationStatus == 'CREATED'"
+              :checked="item.share"
+              @click="isPublic(item.name, item.share)"
             />
           </div>
         </td>
@@ -508,7 +510,20 @@ const removeDeleteData = () => {
   // 關閉 Delete Modal
   templateId.value = "";
 };
-
+const isPublic = (name, share) => {
+  const isShare = !share
+  api.genericTemplate().public({
+    type:'NRM',
+    name:name,
+    share:isShare
+  })
+.then(res=>{
+    console.log(res)
+    getTableData()
+  }).catch((err)=>{
+    console.log(err)
+  })
+}
 watch(templateName, () => {
   text_invalidated.value = false;
 });

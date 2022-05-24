@@ -30,8 +30,9 @@
               class="form-check-input cursor-pointer"
               type="checkbox"
               role="switch"
+              
               :checked="item.share"
-              @click="sh(item.name, item.share)"
+              @click="isPublic(item.name, item.share)"
             />
             <!-- (item.name, item.share) -->
           </div>
@@ -197,8 +198,8 @@
   <Alert ref="alertRef" v-show="alertExist"></Alert>
 </template>
 <script setup>
-import axios from 'axios';
 import { useI18n } from 'vue-i18n';
+import { useStore } from 'vuex';
 import { delay } from '@/assets/js/delay';
 import { form } from '@/assets/js/newFormData';
 import Table from '../components/global/table.vue';
@@ -218,6 +219,7 @@ const modalDelete = ref(null);
 const uploadData_create = ref(null);
 const uploadData_update = ref(null);
 const { t } = useI18n();
+const  store  = useStore();
 const th_list = [
   { name: "name", text: t('nfv.name') },
   { name: "allocate_nssi", text: t('nfv.allocate') },
@@ -253,10 +255,10 @@ const getTableData = async () => { // 顯示 Table 資料
   // if(uu_id == "1"){
   //   td_list.value = res.data;
   // }else{
-  //   td_list.value = res.data.filter(x => x.user_id == uu_id );
+    td_list.value = res.data.filter(x => x.user_id == store.state.uuid );
   // }
 
-  td_list.value = res.data
+  // td_list.value = res.data
 };
 const create_validate = () => {  // Create Modal 驗證
   const textValidate = text_Validate([repeatName.value, fileName.value]);
@@ -333,15 +335,14 @@ const download_template_button = file => { // 點擊 Download Modal 按鈕
   };
   callDownload(file, alertData);
 };
-const sh = (name, share) => {
-  console.log(share)
-  console.log(name)
-  const s = !share
-  console.log('s',s)
-  axios.post('http://10.20.1.40/basic/switch_share/',{
+const isPublic = (name, share) => {
+  const isShare = !share
+  console.log('s',isShare)
+  api.nfvManoPlugin().public({
     name:name,
-    share:s
-  }).then(res=>{
+    share:isShare
+  })
+.then(res=>{
     console.log(res)
     getTableData()
   }).catch((err)=>{

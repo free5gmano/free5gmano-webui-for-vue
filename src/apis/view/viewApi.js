@@ -7,7 +7,9 @@ export class tableListApi extends Connect {
     templateList(){
         return super.get('ObjectManagement/GenericTemplate/')
     }
-
+    // public(){
+    //     return super.post('SecurityManagement/template_switch_share/')
+    // }
 }
 
 export class nssTemplateApi extends Connect {
@@ -34,6 +36,9 @@ export class genericTemplateApi extends Connect {
     delete(templateId) {
         return super.delete(`ObjectManagement/GenericTemplate/${templateId}/`)
     }
+    public(from){
+        return super.post('SecurityManagement/template_switch_share/', from)
+    }
 }
 
 export class nfvManoPluginApi extends Connect {
@@ -45,6 +50,9 @@ export class nfvManoPluginApi extends Connect {
     }
     delete(templateId) {
         return super.delete(`plugin/management/${templateId}/`)
+    }
+    public(from){
+        return super.post('SecurityManagement/plugin_switch_share/', from )
     }
 }
 

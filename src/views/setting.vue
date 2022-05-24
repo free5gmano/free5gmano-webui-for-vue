@@ -11,7 +11,7 @@
         </div>
       </div>
       <div class="row justify-content-end">
-        <button class="col-auto btn btn-danger">登 出</button>
+        <button class="col-auto btn btn-danger" @click="logout">登 出</button>
       </div>
     </template>
     <template v-else>
@@ -49,11 +49,21 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { delay } from '@/assets/js/delay';
+import { api } from "../apis/api";
+import { useRouter } from "vue-router";
 const pageStatus = ref(false);
+const router = useRouter()
 onMounted(async () => {
   await delay(700);
   pageStatus.value = true;
 });
+const logout = ()=>{
+api.loadAuth().logout()
+.then(res=>{
+  router.push('/login')
+  console.log(res)
+})
+}
 </script>
 <style scoped>
 .container-custom {

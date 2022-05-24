@@ -14,7 +14,7 @@ module.exports = {
           }
         },
         "/govd": {
-          target: 'http://10.20.1.143:8000',
+          target: 'http://10.20.1.40:80/',
           ws: true,
           changeOrigin: true,
           pathRewrite: {

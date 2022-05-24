@@ -8,19 +8,17 @@
     @update="updateTableData"
   >
     <template v-slot:header>
-      <button class="btn btn-primary ms-3 text-white" @click="chageBtn('NFV')">
-        <span class="d-none d-sm-inline">
-          {{ t("nfv.plugin", ["NFV MANO"]) }}
-        </span>
+      <button class="btn btn-primary ms-3 text-white" @click="cbtn('NFVO')">
+        <span class="d-none d-sm-inline"> NFVO </span>
       </button>
-      <button class="btn btn-primary ms-2 text-white" @click="chageBtn('VNF')">
-        <span class="d-none d-sm-inline"> VNF Template </span>
+      <button class="btn btn-primary ms-2 text-white" @click="cbtn('VNF')">
+        <span class="d-none d-sm-inline"> VNF </span>
       </button>
-      <button class="btn btn-primary ms-2 text-white" @click="chageBtn('NSD')">
-        <span class="d-none d-sm-inline"> NSD Template </span>
+      <button class="btn btn-primary ms-2 text-white" @click="cbtn('NSD')">
+        <span class="d-none d-sm-inline"> NSD </span>
       </button>
-      <button class="btn btn-primary ms-2 text-white" @click="chageBtn('NRM')">
-        <span class="d-none d-sm-inline"> NRM Template </span>
+      <button class="btn btn-primary ms-2 text-white" @click="cbtn('NRM')">
+        <span class="d-none d-sm-inline"> NRM </span>
       </button>
     </template>
     <template v-slot:table-name>
@@ -28,38 +26,62 @@
     </template>
     <template v-slot:table-td>
       <tr v-for="item in filterEntries" :key="item.name">
-        <td v-for="i in columnSort" :key="i">{{ item[i] }}</td>
+        <td v-for="i in trHeader" :key="i" class="tablecell-custom">
+          <i
+            v-if="i == 'templateId'"
+            class="bi bi-list cursor-pointer me-1"
+            data-bs-toggle="modal"
+            data-bs-target="#show_plugin_Modal"
+            @click="get_templateId(item[i])"
+          ></i>
+          {{ item[i] }}
+        </td>
       </tr>
     </template>
   </Table>
+  <Modalshow ref="modalShow" @remove="removeShowData">
+    <template v-slot:header> {{ templateName }} {{ t("list") }} </template>
+    <template v-slot:body>
+      <form>
+        <div class="mb-3">
+          <label for="InputFile" class="form-label">
+            {{ `${t("generic.template", [templateName, t("ID")])} :` }}
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            id="InputFile"
+            placeholder="請輸入 Plugin 名稱"
+            v-model="templateId"
+            readonly
+          />
+        </div>
+      </form>
+    </template>
+  </Modalshow>
 </template>
 <script setup>
 import { useI18n } from "vue-i18n";
 import { delay } from "@/assets/js/delay";
 import Table from "../components/global/table.vue";
-// import { Share } from "@/assets/js/api";
-import { ref, onBeforeMount } from "vue";
-// const { PluginList } = Share();
+import { api } from "../apis/api";
+import { ref, onBeforeMount, onMounted, defineAsyncComponent } from "vue";
+const Modalshow = defineAsyncComponent(() =>
+  import(
+    /* webpackChunkName: "Modalshow" */ "../components/global/modal-show.vue"
+  )
+);
 const { t } = useI18n();
 const showBtn = ref(false);
-// const columnNumber = computed(() => a.value.length); // 頁面 tr 個數
-
 const th_list = ref([
   { name: "userName", text: t("base.userName") },
   { name: "name", text: t("nfv.name") },
   { name: "allocate_nssi", text: t("nfv.allocate") },
   { name: "deallocate_nssi", text: t("nfv.deallocate") },
 ]);
-
-const td_list = ref([
-  {
-    userName: "NFVO",
-    name: "123",
-    allocate_nssi: "allocate/main.py",
-    deallocate_nssi: "deallocate/main.py",
-  },
-]);
-console.log(td_list);
+const td_list = ref([]);
+const templateId = ref("");
+const templateName = ref("");
 const status = ref(false);
 const filterEntries = ref([]);
 const columnSort = ref([
@@ -68,70 +90,81 @@ const columnSort = ref([
   "allocate_nssi",
   "deallocate_nssi",
 ]);
-// const getTableData = async () => {
-//   // 顯示 Table 資料
-//   const res = await PluginList();
-//   console.log(res);
-//   td_list.value = res.data;
-// };
+const trHeader = ref(["user_name", "name", "allocate_nssi", "deallocate_nssi"]);
+const getNfvoList = async () => {
+  const res = await api.tableList().pluginList();
+  td_list.value = res.data;
+};
+const getgenericList = async () => {
+  const res = await api.tableList().templateList();
+  td_list.value = res.data.filter(
+    (x) => (x.templateType == templateName.value && x.operationStatus == "UPLOAD")
+  );
+};
 const updateTableData = (val) => {
   // 每次執行 Table 操作，更新資料
   filterEntries.value = val;
 };
 const name = ref(t("nfv.plugin", ["NFV MANO", t("list")]));
-const chageBtn = (a) => {
-  console.log(a);
-  if (a == "VNF") {
-    name.value = t("generic.template", ["VNF", t("list")]);
-    th_list.value = [
-      { name: "userName", text: t("newNfv.userName") },
-      { name: "name", text: t("newNfv.name") },
-      { name: "allocate_nssi", text: t("newNfv.allocate_nssi") },
-      { name: "deallocate_nssi", text: t("newNfv.deallocate_nssi") },
-    ];
-    td_list.value[0].userName = "VNF";
-  } else if (a == "NSD") {
-    name.value = t("generic.template", ["NSD", t("list")]);
-    th_list.value = [
-      { name: "userName", text: t("newNfv.userName") },
-      { name: "name", text: t("newNfv.name") },
-      { name: "allocate_nssi", text: t("newNfv.allocate_nssi") },
-      { name: "deallocate_nssi", text: t("newNfv.deallocate_nssi") },
-    ];
-    td_list.value[0].userName = "NSD";
-  } else if (a == "NRM") {
-    name.value = t("generic.template", ["NRM", t("list")]);
-    th_list.value = [
-      { name: "userName", text: t("newNfv.userName") },
-      { name: "name", text: t("newNfv.name") },
-      { name: "allocate_nssi", text: t("newNfv.allocate_nssi") },
-      { name: "deallocate_nssi", text: t("newNfv.deallocate_nssi") },
-    ];
-    td_list.value[0].userName = "NRM";
-  } else if (a == "NFV") {
-    name.value = t("generic.template", ["NFV", t("list")]);
+const cbtn = (val) => {
+  if (val === "NFVO") {
+    name.value = t("nfv.plugin", ["NFV MANO", t("list")]);
     th_list.value = [
       { name: "userName", text: t("base.userName") },
       { name: "name", text: t("nfv.name") },
       { name: "allocate_nssi", text: t("nfv.allocate") },
       { name: "deallocate_nssi", text: t("nfv.deallocate") },
     ];
-    td_list.value[0].userName = "NFV";
+    columnSort.value = ["userName", "name", "allocate_nssi", "deallocate_nssi"];
+    trHeader.value = ["user_name", "name", "allocate_nssi", "deallocate_nssi"];
+    getNfvoList();
+  } else {
+    templateName.value = val;
+    name.value = t("generic.template", [val, t("list")]);
+    filterGBtn();
   }
 };
-// const a =async () => {
-//   console.log(123)
-//   status.value = false;
-//  await delay(700)
-//   status.value = true;
-// }
+const filterGBtn = async () => {
+  th_list.value = [
+    { name: "userName", text: t("base.userName") },
+    { name: "templateId", text: t("ID") },
+    { name: "name", text: t("generic.name") },
+    { name: "description", text: t("Description") },
+    { name: "templateType", text: t("Type") },
+    { name: "nfvoType", text: t("NFVO") },
+  ];
+  columnSort.value = [
+    "userName",
+    "templateId",
+    "name",
+    "nfvoType",
+    "deallocate_nssi",
+  ];
+  trHeader.value = [
+    "user_name",
+    "templateId",
+    "name",
+    "description",
+    "nfvoType",
+    "templateType",
+  ];
+  getgenericList();
+};
+const get_templateId = (id) => {
+  templateId.value = id;
+};
+const removeShowData = () => {
+  // 關閉 Show Modal
+  templateId.value = "";
+};
 onBeforeMount(async () => {
-  // try {
-  //   await getTableData();
-  // } catch (err) {
-  //   console.log(err);
-  // }
-  await delay(700);
-  status.value = true;
+  try {
+    await getNfvoList();
+    await delay(700);
+    status.value = true;
+  } catch (err) {
+    console.log(err);
+  }
 });
+onMounted(() => {});
 </script>
