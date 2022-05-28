@@ -76,8 +76,15 @@
 <script setup>
 import { ref, defineAsyncComponent } from "vue";
 import { useRouter } from "vue-router";
-// import { login } from '../apis/auth/authApi';
+import { useCookies } from "vue3-cookies";
 import { api } from "../apis/api";
+
+const { cookies } = useCookies();
+
+//流水號 cookies設置5秒
+const serialNo="ABCDEFG"  
+cookies.set("uuid",`${serialNo}`,5)  
+
 const ModalRegister = defineAsyncComponent(() =>
   import(
     /* webpackChunkName: "ModalRegister" */ "@/components/global/modal-register.vue"
@@ -97,7 +104,7 @@ const b = () => {
     path: "/dashboard",
   });
 };
-const loginButton = () => {
+const loginButton = () => {   
   api
     .loadAuth()
     .login(form)
@@ -107,10 +114,11 @@ const loginButton = () => {
         router.push({
           path: "/dashboard",
         });
+            
       } else {
         login_validate.value = true;
       }
-      sessionStorage.setItem("uu_id", res.data.uu_id);
+      // sessionStorage.setItem("uu_id", res.data.uu_id);
     })
     .catch((err) => {
       console.log(err);

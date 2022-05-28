@@ -1,9 +1,12 @@
 import { createStore } from 'vuex'
+import { useCookies } from "vue3-cookies";
+const { cookies } = useCookies();
 // import { api } from '../apis/api'
 export default createStore({
   state: {
+    uuid: "",
     windowWidth: window.innerWidth,
-    currentRoute: '',
+    currentRoute: "",
     menuData: [
       {
         name: "Dashboard",
@@ -62,26 +65,27 @@ export default createStore({
         icon: "bi bi-bootstrap",
         url: "setting",
         childNodes: [],
-      }
+      },
     ],
-    localeLang:''
+    localeLang: "",
   },
   mutations: {
+    updateUuid(state) {
+      state.uuid = cookies.get("uuid");
+    },
     changeLoginStatus(state) {
       state.loginStatus = !state.loginStatus;
     },
     changeWindowWidth(state) {
       state.windowWidth = window.innerWidth;
     },
-    changeRoute(state,payload) {
+    changeRoute(state, payload) {
       state.currentRoute = payload;
     },
-    changeLocaleLang(state,payload) {
+    changeLocaleLang(state, payload) {
       state.localeLang = payload;
     },
   },
-  actions: {
-  },
-  modules: {
-  }
-})
+  actions: {},
+  modules: {},
+});

@@ -9,3 +9,13 @@ import "../src/assets/scss/custom.css"
 import "bootstrap/dist/js/bootstrap.bundle.js"
 import "bootstrap-icons/font/bootstrap-icons.css"
 createApp(App).use(store).use(router).use(VueAxios, axios).use(i18n).mount('#app')
+// to.name !== "Login" && !to.meta.requiresAuth
+router.beforeEach((to,from,next) => {
+  if (to.meta.requiresAuth) {
+    next("NSS_Template");
+  } else {
+    console.log(to.name);
+    next("NSS_Template");
+
+  }
+});

@@ -1,33 +1,31 @@
 <template>
-    <main>
-      <div class="grid-custom">
-        <div class="grid-main-custom" style="overflow: hidden;">
-          <router-view v-if="isRouterAlive"></router-view>
-        </div>
+  <main>
+    <div class="grid-custom">
+      <div class="grid-main-custom" style="overflow: hidden">
+        <router-view v-if="isRouterAlive"></router-view>
       </div>
-    </main>
-    <Header></Header>
-    <Sidebar></Sidebar>
+    </div>
+  </main>
+  <Header></Header>
+  <Sidebar></Sidebar>
 </template>
 <script setup>
-import { useStore } from 'vuex';
-import { useRoute } from 'vue-router';
+import { useStore } from "vuex";
+import { useRoute } from "vue-router";
+
 // import { useI18n } from 'vue-i18n';
-import { useCookies } from "vue3-cookies";
 import Header from "./components/global/header.vue";
 import Sidebar from "./components/global/sidebar.vue";
-// import Cookies from 'js-cookie'
-import { ref, watch, provide, nextTick, onMounted } from 'vue';
-console.log(process.env)
-console.log(document.cookie);
-const { cookies } = useCookies();
-// var user = { id:1, name:'Journal',session:'25j_7Sl6xDq2Kc3ym0fmrSSk2xV2XkUkX' };
-// cookies.set('user',user);
-const a = cookies.isKey('user') 
-const b = cookies.keys()  
-console.log(a)
-console.log(b)
+import { ref, watch, provide, nextTick, onMounted } from "vue";
+console.log(process.env);
+
 const store = useStore();
+store.commit("updateUuid");
+console.log(store.state.uuid)
+if(store.state.uuid) {
+  //COOKIES已過期
+}
+
 const route = useRoute();
 const isRouterAlive = ref(true);
 // const { locale } = useI18n()
@@ -37,18 +35,15 @@ const reload = () => {
     isRouterAlive.value = true;
   });
 };
-provide('reload', reload);
+provide("reload", reload);
 watch(route, () => {
-  if(route.path == '/')
-    store.commit('changeRoute', 'dashboard');
-  else
-    store.commit('changeRoute', route.path.slice(1));
+  if (route.path == "/") store.commit("changeRoute", "dashboard");
+  else store.commit("changeRoute", route.path.slice(1));
 });
 onMounted(() => {
   window.addEventListener("resize", () => {
     store.commit("changeWindowWidth");
   });
-  
 });
 </script>
 <style>
