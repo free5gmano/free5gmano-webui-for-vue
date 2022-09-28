@@ -6,19 +6,27 @@ module.exports = {
     devServer: {
       proxy:{
         "/api": {
-          target: 'http://10.20.1.40/',
+          target: 'http://10.20.1.57:8000/',
           ws: true,
           changeOrigin: true,
           pathRewrite: {
-            '^/api': '/' 
+            '^/api': '/'
           }
         },
         "/govd": {
-          target: 'http://10.20.1.40:80/',
+          target: 'http://10.20.1.57:8000/',
           ws: true,
           changeOrigin: true,
           pathRewrite: {
-            '^/govd': '/' 
+            '^/govd': '/', 
+          }
+        },
+        "/nssi_topology/govd": {
+          target: 'http://10.20.1.57:8000/',
+          ws: true,
+          changeOrigin: true,
+          pathRewrite: {
+            '^/nssi_topology/govd': '/' 
           }
         }
       }

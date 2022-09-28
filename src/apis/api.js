@@ -34,4 +34,7 @@ export class api {
   static nssiTopology() {
     return new nssiTopologyApi(process.env.VUE_APP_BASE_URL_proxyGovd, false);
   }
+  // static nssiTopology() {
+  //   return new nssiTopologyApi('', false);
+  // }
 }

@@ -5,6 +5,7 @@
         {{ t('generic.template', [t('NSSI_Template')]) }}
       </h3>
       <!-- Network Slice Subnet Template -->
+      <button type="button" @click="allocate_group_button()" class="btn btn-primary" style="color:white;">Allocate NSI</button>
     </template>
     <template v-slot:button>
       {{ t('generic.template', [`${ t('Create') }NSS`]) }}
@@ -15,10 +16,16 @@
       <!-- NSS Template List -->
     </template>
     <template v-slot:table-td>
+      
       <tr v-for="item in filterEntries" :key="item.templateId">
+        <td class="form-check m-0 d-flex justify-content-center align-items-center">
+          <input type="checkbox" name="" :value="item.templateId" id="" v-model="cheakBox" >
+        </td>
         <td class="tablecell-custom">{{ item.templateId }}</td>
         <td class="tablecell-custom">{{ item.description }}</td>
         <td class="tablecell-custom">{{ item.nfvoType }}</td>
+        <td class="tablecell-custom">{{ item.slicename }}</td>
+
         <td class="w-0">
           <div class="d-flex justify-content-center align-items-center text-white bg-info rounded-circle cursor-pointer mx-auto" style="width:30px; height:30px" data-bs-toggle="modal" data-bs-target="#show_plugin_Modal" @click="show_template_button(item)">
             <i class="bi bi-file-text-fill"></i>
@@ -177,6 +184,13 @@
             <!-- 請選擇一個 NFVO -->
           </div>
         </div>
+        <div class="mb-3">
+          <label for="InputFile" class="form-label">
+            Network Slice
+            <!-- NSS Description : -->
+          </label>
+          <input type="text" class="form-control" id="InputFile" :placeholder="t('SliceName')" v-model.trim="templateNetwork">
+        </div>
       </form>
     </template>
     <template v-slot:footer>
@@ -219,9 +233,11 @@ const modalCreate = ref(null);
 const modalDelete = ref(null);
 const columnSort = ['templateId','description','nfvoType'];
 const th_list = [
+  { name: "cheakBox", text: t("Cheak") },
   { name: "templateId", text: t("ID") },
   { name: "description", text: t("Description") },
   { name: "nfvoType", text: t("NFVO") },
+  { name: "slice_name", text: t("SliceName") },
   { name: "template_list", text: t("Template") },
   { name: "allocate_nssi", text: t("Allocate") },
   { name: "delete_template", text: t("Delete") },
@@ -237,6 +253,13 @@ const templateVNFList = ref([]);
 const templateNSDList = ref([]);
 const templateNRMList = ref([]);
 const templateDescription = ref('');
+const templateNetwork = ref('');
+const cheakBox = ref([]);
+
+
+
+console.log(filterEntries)
+
 const selected_vnf_description = ref('');
 const selected_nsd_description = ref('');
 const selected_nrm_description = ref('');
@@ -246,6 +269,8 @@ const currentNRM = ref(t('base.select'));
 const currentNFVMANO = ref(t('base.select'));
 set_selects_invalidated(['select_vnf_invalidated', 'select_nsd_invalidated', 'select_nrm_invalidated', 'select_nfvmano_invalidated']);
 const { select_vnf_invalidated, select_nsd_invalidated, select_nrm_invalidated, select_nfvmano_invalidated } = toRefs(selects_invalidated);
+
+// s
 const getTableData = async () => {  // 獲取 VNF NSD NRM 資料
   const res = await api.tableList().templateList();
   templateVNFList.value = res.data.filter(i => i.operationStatus == 'UPLOAD' && i.templateType == 'VNF');
@@ -269,8 +294,10 @@ const getNssData = async () => { // 獲取 NSS Template 資料
         instanceId: i.instanceId,
         templateId: i.templateId,
         nfvoType: nfvoType,
+        slicename: i.slicename
       };
       td_list.value.push(obj);
+      console.log(obj)
     }
   }
 };
@@ -311,13 +338,14 @@ const create_template_modal = async () => { // 點擊 Create Modal 內創建按�
       configSuccess: t('created'),
       configUnsuccess: t('create'),
     };
-    const formName = ['nfvoType', 'genericTemplates', 'genericTemplates', 'genericTemplates', 'description'];
-    const formValue = [currentNFVMANO.value, currentVNF.value, currentNSD.value, currentNRM.value, templateDescription.value];
+    const formName = ['nfvoType', 'genericTemplates', 'genericTemplates', 'genericTemplates', 'description','slicename'];
+    const formValue = [currentNFVMANO.value, currentVNF.value, currentNSD.value, currentNRM.value, templateDescription.value,templateNetwork.value];
     const formData = form(formName, formValue);
     NSST_create(formData,  getNssData, alertData);
     closeModal(modalCreate.value);
   }
 };
+
 const updateTableData = val => {  // 每次執行 Table 操作，更新資料 
   filterEntries.value = val;
 };
@@ -335,7 +363,15 @@ const get_templateId = id => {
 };
 const allocate_template_button = item => { // 點擊 Allocate Modal 按鈕
   router.push({ path: '/nssi_topology/', query: { id: item.templateId, status: 'allocate'}});
-};
+};//add to top url
+
+const allocate_group_button=()=>{
+  if(cheakBox.value.length <= 0) {
+    alert("Please choice NSSI Template!!");
+    return;
+  }
+  router.push({ path: '/nssi_topology/', query: { id: cheakBox.value, nssinum: cheakBox.value.length, status: 'group_allocate'}});
+}
 const delete_template_modal = () => { // 點擊 Delete Modal 內刪除按鈕
   const alertData = {
     Template: t('generic.template', [t('NSSI_Template')]),

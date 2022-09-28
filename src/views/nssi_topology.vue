@@ -47,7 +47,7 @@
 import { useI18n } from 'vue-i18n'
 import { useRoute } from "vue-router";
 import { ref, watch, onMounted, onBeforeUnmount } from '@vue/runtime-core';
-import { show_nssi, nssiContent, myChartDbclick, myChartClick, allocate_nssi, deallocate_nssi_topology, NSViewChartContent } from '@/assets/js/topology'
+import { show_nssi, nssiContent, myChartDbclick, myChartClick, allocate_nssi, deallocate_nssi_topology, NSViewChartContent, show_allocate_nssi_topology } from '@/assets/js/topology'
 
 let mychart;
 const dom = ref(null);
@@ -57,14 +57,27 @@ const NSSI_status = ref('NSSI');
 const title = ref(`${ t('NSSI') }${ t('Graph') }`);
 if(route.query.id)
   title.value = `${ route.query.id } ${ t('Graph') }`;
-const topology = () => {
+const topology = async() => {
+  mychart.showLoading();
+  var nssiID;
   if(route.query.status == "deallocate") {
     NSSI_status.value = "deallocate"; 
     deallocate_nssi_topology(mychart, route.query.id);
   }
   else if(route.query.status == "allocate") {
     NSSI_status.value = "allocate"; 
-    allocate_nssi(mychart, route.query.id);
+    nssiID =  await allocate_nssi(mychart, route.query.id);
+    console.log("nssiID");
+    console.log(nssiID);
+    show_allocate_nssi_topology(mychart, nssiID);
+  }
+  else if(route.query.status == "group_allocate") {
+    NSSI_status.value = "allocate"; 
+    nssiID = "";
+    for (let index = 0; index < route.query.nssinum; index++) {
+      nssiID +=  await allocate_nssi(mychart, route.query.id[index]) + ",";
+    }
+    show_allocate_nssi_topology(mychart, nssiID);
   }
   else {
     NSSI_status.value = "show";

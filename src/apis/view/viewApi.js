@@ -78,7 +78,8 @@ export class nssiTopologyApi extends Connect {
     delete(nssiID){
         return super.delete(`ObjectManagement/NSS/SliceProfiles/${nssiID}/`);
     }
-    allocateNssi(json){
+    allocateNssi(json) {
+        console.log(json);
         return super.post(`ObjectManagement/NSS/SliceProfiles/`, json, {
         headers: {
           'Content-Type': 'application/json'
