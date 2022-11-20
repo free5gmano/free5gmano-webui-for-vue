@@ -48,7 +48,7 @@
           :class="{ 'd-none': !login_validate }"
         >
           <i class="bi bi-exclamation-circle-fill text-danger"></i>
-          <small class="text-danger ms-2">{{msg}}</small>
+          <small class="text-danger ms-2">{{ msg }}</small>
           <!-- <small class="text-danger ms-2">您的帳號尚未授權</small> -->
         </div>
         <button
@@ -57,6 +57,14 @@
         >
           登入
         </button>
+
+        <button
+          class="w-100 btn btn-secondary btn-lg text-white mb-3"
+          @click="otherlogin"
+        >
+          其他登入方式
+        </button>
+
         <router-link class="text-decoration-none" to="/"
           >忘記密碼 ?</router-link
         >
@@ -78,6 +86,7 @@
 import { ref, defineAsyncComponent } from "vue";
 import { useRouter } from "vue-router";
 import { api } from "../apis/api";
+
 const ModalRegister = defineAsyncComponent(() =>
   import(
     /* webpackChunkName: "ModalRegister" */ "@/components/global/modal-register.vue"
@@ -87,13 +96,21 @@ const router = useRouter();
 const name = ref("");
 const pwd = ref("");
 const login_validate = ref(false);
-const msg = ref()
+const msg = ref();
 const b = () => {
   console.log(process.env.VUE_APP_BASE_URL_proxyGovd == "/govd");
+
   router.push({
     path: "/dashboard",
   });
 };
+
+const otherlogin = () => {
+  router.push({
+    path: "/login2",
+  });
+};
+
 const loginButton = () => {
   const form = {
     name: name.value,
@@ -110,7 +127,7 @@ const loginButton = () => {
         });
       } else {
         login_validate.value = true;
-        msg.value = res.data.message
+        msg.value = res.data.message;
       }
     })
     .catch((err) => {
