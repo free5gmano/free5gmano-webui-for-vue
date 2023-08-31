@@ -371,6 +371,7 @@ const allocate_group_button=()=>{
     return;
   }
   router.push({ path: '/nssi_topology/', query: { id: cheakBox.value, nssinum: cheakBox.value.length, status: 'group_allocate'}});
+  // router.push({ path: '', query: { id: cheakBox.value, nssinum: cheakBox.value.length, status: 'group_allocate'}});
 }
 const delete_template_modal = () => { // 點擊 Delete Modal 內刪除按鈕
   const alertData = {

@@ -64,7 +64,6 @@ export class NSSInstanceApi extends Connect {
         return super.get(`ObjectManagement/NetworkSliceSubnet/*/?scope=[%27BASE_NTH_LEVEL%27,1]`)
     }
 }
-
 export class nssiTopologyApi extends Connect {
     showNssi(id){
         return super.get(`ObjectManagement/NSS/topology${id}/`)

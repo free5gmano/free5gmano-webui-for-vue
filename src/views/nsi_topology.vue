@@ -48,7 +48,7 @@ import { api } from "@/apis/api";
 import { useI18n } from 'vue-i18n'
 import { useRoute } from "vue-router";
 import { ref, watch, onMounted, onBeforeUnmount } from '@vue/runtime-core';
-import { show_nssi, nssiContent, myChartDbclick, myChartClick, allocate_nssi, deallocate_nssi_topology, NSViewChartContent, show_allocate_nssi_topology, show_group_allocate_nssi_topology, chart_content_update } from '@/assets/js/topology'
+import { show_nssi, nssiContent, myChartDbclick, myChartClick, allocate_nssi, deallocate_nssi_topology, NSViewChartContent, show_allocate_nssi_topology, show_group_allocate_nssi_topology } from '@/assets/js/topology'
 
 let mychart;
 const dom = ref(null);
@@ -56,9 +56,6 @@ const { t } = useI18n();
 const route = useRoute();
 const NSSI_status = ref('NSSI');
 const title = ref(`${ t('NSSI') }${ t('Graph') }`);
-var nsi_id;
-var query_status = "";
-var last_groupNssiId = "";
 if(route.query.id)
   title.value = `${ route.query.id } ${ t('Graph') }`;
 const topology = async() => {
@@ -101,8 +98,6 @@ const topology = async() => {
     }
   }
   else if(route.query.status == "nsi_show") {
-    nsi_id = route.query.id;
-    query_status = "nsi_show"
     await api.loadAuth().get_ns_nssi({nsi_id: route.query.id}).then(response => {
       apply_location = response.data
     })
@@ -111,7 +106,8 @@ const topology = async() => {
       groupNssiId += apply_location.nssi_list[index];
       groupNssiId += "|";
     }
-    last_groupNssiId = groupNssiId;
+    console.log(groupNssiId)
+
     show_group_allocate_nssi_topology(mychart, groupNssiId, apply_location);
   }
   else {
@@ -135,42 +131,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
   show_nssi(dom.value, true);
 });
-
-// setTimeout(function(){
-//   console.log(nsi_id);
-// },1000);
-
-
-
-async function myrefresh(){
-  if (query_status=="nsi_show"){
-    var apply_location;
-    console.log(nsi_id);
-    await api.loadAuth().get_ns_nssi({nsi_id: nsi_id}).then(response => {
-        apply_location = response.data
-      })
-      var groupNssiId = ""; 
-      for (let index = 0; index < apply_location.nssi_list.length; index++) {
-        groupNssiId += apply_location.nssi_list[index];
-        groupNssiId += "|";
-      }
-      if (last_groupNssiId == groupNssiId){
-        return;
-      }
-      else{
-        last_groupNssiId = groupNssiId;
-        chart_content_update(mychart, groupNssiId, apply_location, last_groupNssiId);
-      }
-      
-  }
-  else{
-    return;
-  }
-  
-}
-
-setInterval(myrefresh,5000);
-
 </script>
 <style>
 .chart-pie {

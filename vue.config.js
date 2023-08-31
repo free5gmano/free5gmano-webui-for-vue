@@ -4,29 +4,39 @@ module.exports = {
     //   https: false,
     // }
     devServer: {
-      proxy:{
+      port: 8080,
+      disableHostCheck: true,
+    proxy: {
+        "/nssi_topology/govd": {
+        target: "http://10.0.0.218:8000/",
+        // ws: true,
+        // changeOrigin: true,
+        pathRewrite: {
+          "^/nssi_topology/govd": "/",
+        },
+      },
+        "/nssi_topology/api": {
+        target: "http://10.0.0.218:8000/",
+        // ws: true,
+        // changeOrigin: true,
+        pathRewrite: {
+          "^/nssi_topology/api": "/",
+        },
+      },
         "/api": {
-          target: 'http://10.20.1.57:8000/',
-          ws: true,
-          changeOrigin: true,
+          target: 'http://10.0.0.218:8000/',
+          // ws: true,
+          // changeOrigin: true,
           pathRewrite: {
             '^/api': '/'
           }
         },
         "/govd": {
-          target: 'http://10.20.1.57:8000/',
-          ws: true,
-          changeOrigin: true,
+          target: 'http://10.0.0.218:8000/',
+          // ws: true,
+          // changeOrigin: true,
           pathRewrite: {
             '^/govd': '/', 
-          }
-        },
-        "/nssi_topology/govd": {
-          target: 'http://10.20.1.57:8000/',
-          ws: true,
-          changeOrigin: true,
-          pathRewrite: {
-            '^/nssi_topology/govd': '/' 
           }
         }
       }

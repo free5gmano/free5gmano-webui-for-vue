@@ -75,10 +75,15 @@ const adminMenuData =  [
         ],
       },
       {
-        name: "Auth Account",
-        icon: "bi bi-bootstrap",
-        url: "authAccount",
-        childNodes: [],
+        name: "NSI View",
+        icon: "bi bi-brightness-high",
+        url: "nsi_view",
+        childNodes: [
+          {
+            name: "List View",
+            url: "NS_Instance",
+          }
+        ],
       },
       {
         name: "Setting",
