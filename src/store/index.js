@@ -60,6 +60,27 @@ export default createStore({
         ],
       },
       {
+        name: "NSI View",
+        icon: "bi bi-brightness-high",
+        url: "nsi_view",
+        childNodes: [
+          {
+            name: "Graph View",
+            url: "nsi_topology",
+          },
+          {
+            name: "List View",
+            url: "NS_Instance",
+          },
+        ],
+      },
+      {
+        name: "NS Security",
+        icon: "bi bi-award",
+        url: "ns_security",
+        childNodes: [],
+      },
+      {
         name: "Setting",
         icon: "bi bi-bootstrap",
         url: "setting",

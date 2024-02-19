@@ -7,6 +7,12 @@ export class tableListApi extends Connect {
     templateList(){
         return super.get('ObjectManagement/GenericTemplate/')
     }
+    UEList(){
+        return super.get('SecurityManagement/show_all_ue/')
+    }
+    IPList(){
+        return super.get('SecurityManagement/show_all_fw_rule/')
+    }
     // public(){
     //     return super.post('SecurityManagement/template_switch_share/')
     // }
@@ -84,5 +90,17 @@ export class nssiTopologyApi extends Connect {
         headers: {
           'Content-Type': 'application/json'
         }}); 
+    }
+}
+
+export class nsSecurityApi extends Connect {
+    deleteUe(IMSI){
+        return super.post(`SecurityManagement/delete_ue/`, IMSI)
+    }
+    deleteRule(IP){
+        return super.post(`SecurityManagement/delete_rule/`, IP)
+    }
+    addRule(IP){
+        return super.post(`SecurityManagement/add_rule/`, IP)
     }
 }

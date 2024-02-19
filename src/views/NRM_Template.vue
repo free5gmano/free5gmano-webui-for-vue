@@ -429,6 +429,8 @@ const delete_template_modal = () => {
 };
 const updateTableData = (val) => {
   // 每次執行 Table 操作，更新資料
+  console.log("val")
+  console.log(val)
   filterEntries.value = val;
 };
 const download_template_button = (file) => {

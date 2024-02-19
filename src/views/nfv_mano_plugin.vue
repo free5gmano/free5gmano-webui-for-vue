@@ -251,11 +251,13 @@ const getFileData = e => { // 更新 Update Modal 內檔案
 };
 const getTableData = async () => { // 顯示 Table 資料
   const res = await api.tableList().pluginList();
+  console.log("res")
   console.log(res)
   // if(uu_id == "1"){
   //   td_list.value = res.data;
   // }else{
     td_list.value = res.data.filter(x => x.user_id == store.state.uuid );
+    console.log('td_list', td_list.value);
   // }
 
   // td_list.value = res.data
@@ -309,6 +311,7 @@ const delete_plugin_modal = () => { // 點擊 Delete Modal 內刪除按鈕
   closeModal(modalDelete.value);
 };
 const updateTableData = val => {  // 每次執行 Table 操作，更新資料
+  console.log('010', val);
   filterEntries.value = val;
 };
 const removeCreateData = () => { // 關閉 Create Modal

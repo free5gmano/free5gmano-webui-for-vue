@@ -1,8 +1,8 @@
 import axios from 'axios';
 // const baseURL = 'govd/'
-const baseURL = 'http://10.20.1.57:8000/';
+// const baseURL = 'http://10.0.0.218:8000/';
 // const baseURL = 'http://127.0.0.1:8000/';
-// const baseURL = process.env.VUE_APP_BASE_URL;
+const baseURL = process.env.VUE_APP_BASE_URL;
 const instance = axios.create({
   baseURL: baseURL,
   // baseURL:baseURL,

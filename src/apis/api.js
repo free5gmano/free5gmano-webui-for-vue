@@ -6,7 +6,8 @@ import {
   nfvManoPluginApi,
   genericTemplateApi,
   nssTemplateApi,
-  tableListApi
+  tableListApi,
+  nsSecurityApi
 } from "./view/viewApi";
 
 export class api {
@@ -33,6 +34,9 @@ export class api {
   }
   static nssiTopology() {
     return new nssiTopologyApi(process.env.VUE_APP_BASE_URL_proxyGovd, false);
+  }
+  static nsSecurity() {
+    return new nsSecurityApi(process.env.VUE_APP_BASE_URL_proxyGovd, false);
   }
   // static nssiTopology() {
   //   return new nssiTopologyApi('', false);

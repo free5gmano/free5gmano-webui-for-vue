@@ -51,10 +51,40 @@ const routes = [
     component: () => import(/* webpackChunkName: "NSS_Instance" */ '../views/NSS_Instance.vue')
   },
   {
+    path: 'NS_Instance',
+    name: 'NS_Instance',
+    meta: { requireAuth: true },
+    component: () => import(/* webpackChunkName: "NS_Instance" */ '../views/NS_Instance.vue')
+  },
+  {
     path: 'nssi_topology',
     name: 'nssi_topology',
     meta: { requireAuth: true },
     component: () => import(/* webpackChunkName: "nssi_topology" */ '../views/nssi_topology.vue')
+  },
+  {
+    path: 'nsi_topology',
+    name: 'nsi_topology',
+    meta: { requireAuth: true },
+    component: () => import(/* webpackChunkName: "nssi_topology" */ '../views/nsi_topology.vue')
+  },
+  {
+    path: 'ns_security',
+    name: 'ns_security',
+    meta: { requireAuth: true },
+    component: () => import(/* webpackChunkName: "nssi_topology" */ '../views/ns_security.vue')
+  },
+  {
+    path: 'ue_list',
+    name: 'ue_list',
+    meta: { requireAuth: true },
+    component: () => import(/* webpackChunkName: "nfv_mano_plugin" */ '../views/ue_list.vue')
+  },
+  {
+    path: 'showfirewall',
+    name: 'showfirewall',
+    meta: { requireAuth: true },
+    component: () => import(/* webpackChunkName: "nfv_mano_plugin" */ '../views/showfirewall.vue')
   },
   {
     path: 'setting',
