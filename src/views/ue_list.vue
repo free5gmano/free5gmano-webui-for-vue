@@ -11,6 +11,12 @@
         UE List
       </h3>
     </template>
+    <template v-slot:button>
+      <!-- <button @click="getAbnormalLog()"> -->
+        Get abnormal log
+      <!-- </button> -->
+    </template>
+    <!-- <button @click="getAbnormalLog">Get abnormal log</button> -->
     <template v-slot:table-name>
       {{ t(("UE list")) }}
     </template>
@@ -28,6 +34,28 @@
       </tr>
     </template>
   </Table>
+  <div class="d-flex flex-column p-4 user-select-none">
+  <h3>
+    Abnormal traffic
+  </h3>
+  <div style="width: 100%; height: 100vh; margin: 0; padding: 0;">
+    <iframe
+      src="http://10.20.1.43:3000/d-solo/ddff35deptkw0e/ip?orgId=1&from=1710209338014&to=1710230938014&panelId=1"
+      frameborder="0"
+      style="width: 100%; height: 100%; border: none;"
+    ></iframe>
+  </div>
+  </div>
+  <Modalcreate>
+  <template v-slot:header>
+    {{ "Abnormal Logs" }}
+  </template>
+  <template v-slot:body>
+    <div v-for="(log, index) in abnormalLog" :key="index">
+      {{ log }}
+    </div>
+  </template>    
+</Modalcreate>
   <Alert ref="alertRef" v-show="alertExist"></Alert>
 </template>
 <script setup>
@@ -39,6 +67,7 @@ import { api } from '../apis/api';
 import { ref, toRefs, watch, onBeforeMount, defineAsyncComponent } from 'vue';
 import { text_invalidated, file_invalidated} from '@/assets/js/validate';
 const Alert = defineAsyncComponent(() => import(/* webpackChunkName: "Alert" */ '../components/global/alert.vue'));
+const Modalcreate = defineAsyncComponent(() => import(/* webpackChunkName: "Modalcreate" */ '../components/global/modal-create.vue'));
 const { t } = useI18n();
 const th_list = [
   { name: "IMSI", text: `IMSI` },
@@ -52,6 +81,7 @@ const fileName = ref('');
 const fileData = ref({});
 const status = ref(false);
 const filterEntries = ref([]);
+const abnormalLog = ref([]);
 const { alertRef, alertExist } = toRefs(alertConfig);
 const columnSort = ['IMSI', 'Teid', 'IP', 'Guti', 'Delete'];
 
@@ -62,6 +92,12 @@ const getTableData = async () => { // 顯示 Table 資料
   filterEntries.value = td_list.value;
 };
 
+// const getAbnormalLog = async () => {
+//   console.log("get_abnormal_log")
+//   const res = a
+// }
+
+
 const delete_ue = async IMSI => { // Update Modal 內名稱
   console.log("delete_ue")
   console.log(IMSI)
@@ -70,6 +106,69 @@ const delete_ue = async IMSI => { // Update Modal 內名稱
   await getTableData();
   // fileName.value = name;
 };
+
+const processAbnormalLog = data => {
+  return data.fin_data.map(entry => {
+    const [source, destination] = entry.split("->");
+    const sourceUE = source.split(":")[0];
+    return `UE(${sourceUE}) 送往${destination} 疑似為攻擊行為`;
+  });
+};
+
+const getAbnormalLog = async () => {
+  console.log("get_abnormal_log");
+  try {
+    const res = await api.tableList().abnormalUE();
+    console.log(res.data);
+    abnormalLog.value = processAbnormalLog(res.data);
+  } catch (error) {
+    abnormalLog.value = ["Error occurred while fetching abnormal log."];
+    console.error("Error fetching abnormal log:", error);
+  }
+};
+
+// const getAbnormalLog = async () => {
+//   console.log("get_abnormal_log")
+//   try {
+//     const res = await api.tableList().abnormalUE();
+//     console.log(res.data)
+//     abnormalLog.value = res.data
+//   } catch(error){
+//     abnormalLog.value = "test"
+//     console.log(abnormalLog.value)
+//   }
+
+// const getAbnormalLog = async () => {
+//   console.log("get_abnormal_log")
+//   try {
+//     const res = await api.getAbnormalLog();
+//     console.log(res.data)
+//     abnormalLog.value = res.data
+//   } catch(error){
+//     abnormalLog.value = "test"
+//     console.log(abnormalLog.value)
+//   }
+  
+  
+  
+  // try {
+  //   const res = await api.getAbnormalLog(); // 假設這是一個從後端獲取異常日誌資料的 API
+  //   if (res.data) {
+  //     // 如果後端返回資料，則將資料顯示在彈出視窗中，這裡假設資料是一個字串
+  //     showAlert(res.data);
+  //   } else {
+  //     showAlert("No abnormal log found."); // 如果後端沒有返回資料，則顯示提示訊息
+  //   }
+  // } catch (error) {
+  //   console.error("Error fetching abnormal log:", error);
+  //   showAlert("Error fetching abnormal log. Please try again later."); // 如果發生錯誤，則顯示錯誤訊息
+  // }
+// };
+
+// const showAlert = message => {
+//   // 透過 alertRef 來控制彈出視窗的顯示
+//   alertRef.value.showAlert(message);
+// };
 
 const updateTableData = val => {  // 每次執行 Table 操作，更新資料
   filterEntries.value = val;
@@ -82,6 +181,7 @@ onBeforeMount(async () => {
 
   try {
     await getTableData();
+    await getAbnormalLog();
   }
   catch(err) {
     console.log(err);

@@ -10,6 +10,9 @@ export class tableListApi extends Connect {
     UEList(){
         return super.get('SecurityManagement/show_all_ue/')
     }
+    abnormalUE() {
+        return super.get('SecurityManagement/get_problem_ue_ip/')
+    }
     IPList(){
         return super.get('SecurityManagement/show_all_fw_rule/')
     }
