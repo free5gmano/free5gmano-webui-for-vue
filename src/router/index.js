@@ -51,10 +51,22 @@ const routes = [
     component: () => import(/* webpackChunkName: "NSS_Instance" */ '../views/NSS_Instance.vue')
   },
   {
+    path: 'NS_Instance',
+    name: 'NS_Instance',
+    meta: { requireAuth: true },
+    component: () => import(/* webpackChunkName: "NS_Instance" */ '../views/NS_Instance.vue')
+  },
+  {
     path: 'nssi_topology',
     name: 'nssi_topology',
     meta: { requireAuth: true },
     component: () => import(/* webpackChunkName: "nssi_topology" */ '../views/nssi_topology.vue')
+  },
+  {
+    path: 'nsi_topology',
+    name: 'nsi_topology',
+    meta: { requireAuth: true },
+    component: () => import(/* webpackChunkName: "nssi_topology" */ '../views/nsi_topology.vue')
   },
   {
     path: 'setting',

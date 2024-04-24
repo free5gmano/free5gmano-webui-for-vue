@@ -19,7 +19,7 @@
       
       <tr v-for="item in filterEntries" :key="item.templateId">
         <td class="form-check m-0 d-flex justify-content-center align-items-center">
-          <input type="checkbox" name="" :value="item.templateId" id="" v-model="cheakBox" >
+          <input type="checkbox" name="" :value="item.templateId" id="" v-model="checkBox" >
         </td>
         <td class="tablecell-custom">{{ item.templateId }}</td>
         <td class="tablecell-custom">{{ item.description }}</td>
@@ -233,7 +233,7 @@ const modalCreate = ref(null);
 const modalDelete = ref(null);
 const columnSort = ['templateId','description','nfvoType'];
 const th_list = [
-  { name: "cheakBox", text: t("Cheak") },
+  { name: "checkBox", text: t("Check") },
   { name: "templateId", text: t("ID") },
   { name: "description", text: t("Description") },
   { name: "nfvoType", text: t("NFVO") },
@@ -254,7 +254,7 @@ const templateNSDList = ref([]);
 const templateNRMList = ref([]);
 const templateDescription = ref('');
 const templateNetwork = ref('');
-const cheakBox = ref([]);
+const checkBox = ref([]);
 
 
 
@@ -366,11 +366,12 @@ const allocate_template_button = item => { // 點擊 Allocate Modal 按鈕
 };//add to top url
 
 const allocate_group_button=()=>{
-  if(cheakBox.value.length <= 0) {
+  if(checkBox.value.length <= 0) {
     alert("Please choice NSSI Template!!");
     return;
   }
-  router.push({ path: '/nssi_topology/', query: { id: cheakBox.value, nssinum: cheakBox.value.length, status: 'group_allocate'}});
+  router.push({ path: '/nssi_topology/', query: { id: checkBox.value, nssinum: checkBox.value.length, status: 'group_allocate'}});
+  // router.push({ path: '', query: { id: checkBox.value, nssinum: checkBox.value.length, status: 'group_allocate'}});
 }
 const delete_template_modal = () => { // 點擊 Delete Modal 內刪除按鈕
   const alertData = {

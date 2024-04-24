@@ -33,4 +33,17 @@ export class authApi extends Connect {
     public(){
         return super.get('SecurityManagement/switch_share/')
     }
+
+    group_slice_allocate(form){
+        return super.post('SecurityManagement/group_slice_allocate/', form)
+    }
+
+    get_ns_list(form){
+        return super.get('SecurityManagement/get_nsi_list/', form)
+    }
+
+    get_ns_nssi(form){
+        return super.post('SecurityManagement/get_ns_nssi/', form)
+    }
+    
 }

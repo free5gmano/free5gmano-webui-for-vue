@@ -1,6 +1,7 @@
 import axios from 'axios';
 // const baseURL = 'govd/'
-const baseURL = 'http://10.20.1.57:8000/';
+const baseURL = 'http://10.0.0.218:8000/';
+console.log("FUCK")
 // const baseURL = 'http://127.0.0.1:8000/';
 // const baseURL = process.env.VUE_APP_BASE_URL;
 const instance = axios.create({
@@ -40,7 +41,10 @@ const NSS_Instance = () => {
 const nssi_topology = () => {
   const showNssi = id => instance.get(`ObjectManagement/NSS/topology${id}`);
   const nssiSwitched = paramsId => instance.get(`ObjectManagement/NSS/topology/${paramsId}/`);
+  console.log(id)
   const showNssiTopology = id => instance.get(`ObjectManagement/NSS/topology/${id}/`);
+  console.log("mlkk")
+  console.log(id)
   const deleteVnf = nssiID => instance.delete(`ObjectManagement/NSS/SliceProfiles/${nssiID}/`);
   const allocateNssi = json => instance.post(`ObjectManagement/NSS/SliceProfiles/`, json, {
     headers: {

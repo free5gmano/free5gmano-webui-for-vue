@@ -13,9 +13,11 @@
     <template v-slot:table-td>
       <tr v-for="item in filterEntries" :key="item.templateId">
         <td  class="tablecell-custom">
+          <input type="checkbox" name="" :value="item.templateId" id="" v-model="cheakBox" >
           <i class="bi bi-list cursor-pointer me-1" data-bs-toggle="modal" data-bs-target="#show_plugin_Modal" @click="show_template_button(item.nssiId, item.nsInfo)"></i>
           {{ item.nssiId }}
         </td>
+        
         <td class="tablecell-custom">{{ item.nsInstanceName }}</td>
         <td class="tablecell-custom">{{ item.administrativeState }}</td>
         <td class="tablecell-custom">{{ item.operationalState }}</td>
@@ -165,30 +167,34 @@ const deleteData = reactive({
   status: null,
 });
   
-const nss_instance_list = async () => {
-  const res = await api.NSSInstance().nssInstanceIist();
+const ns_instance_list = async () => {
+  var ns_list;
+  await api.loadAuth().get_ns_list().then(response => {
+    ns_list = response.data
+  })
   td_list.value = [];
-  for(const i of res.data.attributeListOut) {
+
+
+  for(const i of ns_list.ns_list) {
     const obj = {
-      nssiId: i.nssiId,
+      nssiId: i,
       nsInstanceName: '',
-      administrativeState: i.administrativeState,
-      operationalState: i.operationalState,
-      nsInfo: i.nsInfo,
+      administrativeState: "LOCKED",
+      operationalState: "ENABLED",
+      nsInfo: "null",
       nssi_status: '',
     };
     if(i.nsInfo) {
       obj.nsInstanceName = i.nsInfo.nsInstanceName;
       obj.nssi_status = 'running';
-      // obj.nsInfo=i.nsInfo
     }
     else {
       obj.nsInstanceName = 'null';
       obj.nssi_status = 'deallocated';
-      // obj.nsInfo=null
     }
     td_list.value.push(obj);
   }
+
 };
 const show_template_button = (id, nsInfo) => {
   nssiId.value = id;
@@ -230,8 +236,11 @@ const updateTableData = val => { // 每次執行 Table 操作，更新資料
   filterEntries.value = val;
 };
 const showGraph = (id, status) => {
-  if(status != 'null')
-    router.push({ path:'/nssi_topology/', query: { id: id, status: 'show'}});
+  console.log("44444444444");
+  console.log(status);
+  router.push({ path:'/nssi_topology/', query: { id: id, status: 'nsi_show'}});
+  // if(status != 'null')
+  //   router.push({ path:'/nssi_topology/', query: { id: id, status: 'nsi_show'}});
 };
 const Deallocate_NSSI_button = id => {
   Deallocate_NSSI_ID.value = id;
@@ -252,7 +261,7 @@ const delete_NSSI_modal = () => {
   if(deleteData.status == 'deallocated') {
     api.NSSInstance().deleteNssi(deleteData.id)
     .then(() => {
-      nss_instance_list();
+      ns_instance_list();
       alertEvent(1, alertData.Template, alertData.configSuccess, true);
     });
     closeModal(modalDelete.value)
@@ -267,7 +276,7 @@ const removeDeleteData = () => {
 
 onBeforeMount(async () => {
   try {
-    await nss_instance_list();
+    await ns_instance_list();
   }
   catch(err) {
     console.log(err);
