@@ -45,6 +45,12 @@ export default createStore({
         childNodes: [],
       },
       {
+        name: "GNB Template",
+        icon: "bi bi-broadcast-pin",
+        url: "GNB_Template",
+        childNodes: [],
+      },
+      {
         name: "NSSI View",
         icon: "bi bi-brightness-high",
         url: "nssi_view",
@@ -54,8 +60,12 @@ export default createStore({
             url: "nssi_topology",
           },
           {
-            name: "List View",
+            name: "List View (5GC)",
             url: "NSS_Instance",
+          },
+          {
+            name: "List View (GNB)",
+            url: "GNB_Instance",
           },
         ],
       },

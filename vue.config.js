@@ -8,7 +8,7 @@ module.exports = {
       disableHostCheck: true,
     proxy: {
         "/nssi_topology/govd": {
-        target: "http://10.1.0.47:8080/",
+        target: "http://10.0.0.200:8080/",
         // ws: true,
         // changeOrigin: true,
         pathRewrite: {
@@ -16,7 +16,7 @@ module.exports = {
         },
       },
         "/nssi_topology/api": {
-        target: "http://10.1.0.47:8080/",
+        target: "http://10.0.0.200:8080/",
         // ws: true,
         // changeOrigin: true,
         pathRewrite: {
@@ -24,7 +24,7 @@ module.exports = {
         },
       },
         "/api": {
-          target: 'http://10.1.0.47:8080/',
+          target: 'http://10.0.0.200:8080/',
           // ws: true,
           // changeOrigin: true,
           pathRewrite: {
@@ -32,7 +32,7 @@ module.exports = {
           }
         },
         "/govd": {
-          target: 'http://10.1.0.47:8080/',
+          target: 'http://10.0.0.200:8080/',
           // ws: true,
           // changeOrigin: true,
           pathRewrite: {

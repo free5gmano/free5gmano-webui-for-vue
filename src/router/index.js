@@ -45,10 +45,22 @@ const routes = [
     component: () => import(/* webpackChunkName: "NSS_Template" */ '../views/NSS_Template.vue')
   },
   {
+    path: 'GNB_Template',
+    name: 'GNB_Template',
+    meta: { requireAuth: true },
+    component: () => import(/* webpackChunkName: "GNB_Template" */ '../views/GNB_Template.vue')
+  },
+  {
     path: 'NSS_Instance',
     name: 'NSS_Instance',
     meta: { requireAuth: true },
     component: () => import(/* webpackChunkName: "NSS_Instance" */ '../views/NSS_Instance.vue')
+  },
+  {
+    path: 'GNB_Instance',
+    name: 'GNB_Instance',
+    meta: { requireAuth: true },
+    component: () => import(/* webpackChunkName: "GNB_Instance" */ '../views/GNB_Instance.vue')
   },
   {
     path: 'NS_Instance',
